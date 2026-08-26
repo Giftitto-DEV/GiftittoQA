@@ -51,6 +51,8 @@ export default function CuentaPage() {
   }
 
   const initial = user?.nombre?.charAt(0)?.toUpperCase() ?? "U";
+  const isAna = user?.email === "ana@giftitto.com";
+  const anaPhoto = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80&auto=format&fit=crop&crop=face";
 
   return (
     <div style={{ minHeight: "100%", backgroundColor: colors.backgroundSecondary }}>
@@ -76,16 +78,22 @@ export default function CuentaPage() {
               width: 64,
               height: 64,
               borderRadius: "50%",
-              backgroundColor: colors.primary,
+              backgroundColor: isAna ? "transparent" : colors.primary,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               flexShrink: 0,
               boxShadow: `0 0 0 8px ${colors.primary}14`,
               animationDelay: "0.2s",
+              overflow: "hidden",
+              border: isAna ? `2px solid ${colors.borderLight}` : "none",
             }}
           >
-            <span style={{ color: "#fff", fontSize: 24, fontWeight: 700 }}>{initial}</span>
+            {isAna ? (
+              <img src={anaPhoto} alt="Ana Pérez" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              <span style={{ color: "#fff", fontSize: 24, fontWeight: 700 }}>{initial}</span>
+            )}
           </div>
           <div>
             <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: colors.text }}>{user?.nombre}</h1>
