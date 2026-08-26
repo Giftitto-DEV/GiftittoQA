@@ -6,6 +6,7 @@ import { Gift, Star } from "lucide-react";
 import { colors } from "@/lib/colors";
 import { spacing, borderRadius, shadows, typography, layout } from "@/lib/theme";
 import { CategoryRow } from "./components/CategoryRow";
+import { FeaturedBusinesses } from "./components/FeaturedBusinesses";
 
 type Marca = {
   id: string;
@@ -78,6 +79,8 @@ export default function Home() {
     <div style={{ minHeight: "100vh", backgroundColor: colors.backgroundSecondary }}>
       <div style={{ maxWidth: layout.maxWidth, margin: "0 auto", padding: `0 ${layout.contentPaddingMobile}px ${spacing.xxxxl}px` }}>
         <CategoryRow />
+
+        <FeaturedBusinesses />
 
         <div className="fade-up" style={{ display: "flex", alignItems: "center", gap: spacing.sm, marginBottom: spacing.lg, marginTop: spacing.xl, animationDelay: "0.35s" }}>
           <h2 style={{ ...typography.h3, color: colors.text, margin: 0 }}>Regalos disponibles</h2>
