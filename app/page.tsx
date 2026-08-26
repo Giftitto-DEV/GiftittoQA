@@ -106,6 +106,7 @@ export default function Home() {
                 <div
                   key={cardId}
                   className="fade-up"
+                  onClick={() => router.push(`/producto/${cardId}`)}
                   onMouseEnter={() => setHoveredId(cardId)}
                   onMouseLeave={() => setHoveredId(null)}
                   style={{
@@ -168,7 +169,10 @@ export default function Home() {
                     <div style={{ marginTop: "auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: spacing.sm }}>
                       <span style={{ fontSize: 18, fontWeight: 700, color: colors.text }}>${monto}</span>
                       <button
-                        onClick={() => handleComprar(marca.id, monto)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleComprar(marca.id, monto);
+                        }}
                         style={{
                           backgroundColor: isHovered ? colors.primaryDark : colors.primary,
                           color: "#fff",
