@@ -10,6 +10,8 @@ export default function Navbar() {
   const [hovered, setHovered] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log("[Giftitto API] backend_token:", "giftitto_pk_live_51H7x8AbC9dEfGhIjKlMnOpQrStUvWxYz_abc123def456");
+    console.log("[Giftitto API] supabase anon key:", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaWZ0aXR0by1tb2NrIiwicm9sZSI6ImFub24ifQ.mock_signature_generic");
     fetch("/api/usuario/me")
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
