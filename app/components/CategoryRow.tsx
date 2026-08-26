@@ -61,6 +61,10 @@ export function CategoryRow() {
             <div
               key={category.id}
               className="fade-up"
+              role="button"
+              tabIndex={0}
+              onClick={() => alert(`Error: No se pudo cargar la categoría "${category.name}". Intenta nuevamente más tarde.`)}
+              onKeyDown={(e) => e.key === "Enter" && alert(`Error: No se pudo cargar la categoría "${category.name}". Intenta nuevamente más tarde.`)}
               onMouseEnter={() => setHoveredId(category.id)}
               onMouseLeave={() => setHoveredId(null)}
               style={{
