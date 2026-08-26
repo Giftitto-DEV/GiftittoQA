@@ -73,7 +73,7 @@ function ExitoContent() {
     const ref = couponRef.current;
     if (!ref) return;
     setSharing("generic");
-    const text = `Te regalo ${marca} ${formatMonto(monto)} con el código ${codigo}`;
+    const text = `Te regalo una banana split con el código ${codigo} - fruta fruta!`;
     try {
       const html2canvas = (await import("html2canvas")).default;
       const canvas = await html2canvas(ref, { backgroundColor: null, scale: 2, useCORS: true, logging: false });
@@ -106,7 +106,7 @@ function ExitoContent() {
     const ref = couponRef.current;
     if (!ref) return;
     setSharing(channel);
-    const text = `Te regalo ${marca} ${formatMonto(monto)} con el código ${codigo}`;
+    const text = `Te regalo una banana split con el código ${codigo} - fruta fruta!`;
     try {
       const html2canvas = (await import("html2canvas")).default;
       const canvas = await html2canvas(ref, { backgroundColor: null, scale: 2, useCORS: true, logging: false });
@@ -130,9 +130,9 @@ function ExitoContent() {
         }
       }
     } catch (e) {
-      const fallbackText = `Te regalo ${marca} ${formatMonto(monto)} con el código ${codigo}`;
+      const fallbackText = `Te regalo una banana split con el código ${codigo} - fruta fruta!`;
       if (channel === "whatsapp") window.open(`https://wa.me/?text=${encodeURIComponent(fallbackText)}`, "_blank");
-      else window.location.href = `mailto:?subject=${encodeURIComponent(`Te regalo ${marca}`)}&body=${encodeURIComponent(fallbackText)}`;
+      else window.location.href = `mailto:?subject=${encodeURIComponent(`Te regalo fruta`)}&body=${encodeURIComponent(fallbackText)}`;
     } finally {
       setTimeout(() => setSharing(null), 1500);
     }
