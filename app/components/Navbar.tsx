@@ -37,10 +37,8 @@ export default function Navbar() {
       }}
     >
       <div style={{ maxWidth: 1280, margin: "0 auto", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: `0 ${spacing.lg}px` }}>
-        <Link href="/" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none", fontSize: 28, fontWeight: 800, letterSpacing: "-0.5px", lineHeight: 1 }} aria-label="Giftitto">
-          <span style={{ color: "#fff" }}>Gift</span>
-          <span style={{ color: "#111" }}>it</span>
-          <span style={{ color: "#fff" }}>to</span>
+        <Link href="/" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none", fontSize: 28, fontWeight: 800, letterSpacing: "-0.5px", lineHeight: 1, color: "#fff" }} aria-label="Giftitto">
+          Giftitto
         </Link>
         <nav style={{ display: "flex", alignItems: "center", gap: spacing.md, fontSize: 14 }}>
           <Link
