@@ -45,6 +45,13 @@ function formatMonto(monto: number) {
   return `$${monto.toLocaleString("es-AR")}`;
 }
 
+const brandImagesByName: Record<string, string> = {
+  CineMax: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&q=80&auto=format&fit=crop",
+  GustoExpress: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80&auto=format&fit=crop",
+  ModaViva: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80&auto=format&fit=crop",
+  TecnoPlus: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&q=80&auto=format&fit=crop",
+};
+
 function ExitoContent() {
   const params = useSearchParams();
   const marca = params.get("marca") || "";
@@ -81,6 +88,7 @@ function ExitoContent() {
   };
 
   const expiresAt = fecha ? new Date(new Date(fecha).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString() : undefined;
+  const productImageUrl = marca === "ModaViva" ? undefined : brandImagesByName[marca];
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: colors.backgroundSecondary, display: "flex", flexDirection: "column" }}>
@@ -125,7 +133,7 @@ function ExitoContent() {
 
         <div className="fade-up-2" style={{ width: "100%" }}>
           <div className="hover-lift">
-            <CouponCard ref={couponRef} code={codigo || "GC-XXXX"} businessName={marca || "Giftitto"} title={`${marca || "Giftcard"} ${monto ? formatMonto(monto) : ""}`} expiresAt={expiresAt} />
+            <CouponCard ref={couponRef} code={codigo || "GC-XXXX"} businessName={marca || "Giftitto"} title={`${marca || "Giftcard"} ${monto ? formatMonto(monto) : ""}`} expiresAt={expiresAt} productImageUrl={productImageUrl} />
           </div>
 
           <div className="fade-up-3" style={{ display: "flex", gap: spacing.sm, marginTop: spacing.lg }}>
