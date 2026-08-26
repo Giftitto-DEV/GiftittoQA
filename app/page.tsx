@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Gift, Star } from "lucide-react";
 import { colors } from "@/lib/colors";
 import { spacing, borderRadius, shadows, typography, layout } from "@/lib/theme";
+import { CategoryRow } from "./components/CategoryRow";
 
 type Marca = {
   id: string;
@@ -75,8 +76,10 @@ export default function Home() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: colors.backgroundSecondary }}>
-      <div style={{ maxWidth: layout.maxWidth, margin: "0 auto", padding: `${spacing.xl}px ${layout.contentPaddingMobile}px ${spacing.xxxxl}px` }}>
-        <div className="fade-up" style={{ display: "flex", alignItems: "center", gap: spacing.sm, marginBottom: spacing.lg, animationDelay: "0.05s" }}>
+      <div style={{ maxWidth: layout.maxWidth, margin: "0 auto", padding: `0 ${layout.contentPaddingMobile}px ${spacing.xxxxl}px` }}>
+        <CategoryRow />
+
+        <div className="fade-up" style={{ display: "flex", alignItems: "center", gap: spacing.sm, marginBottom: spacing.lg, marginTop: spacing.xl, animationDelay: "0.35s" }}>
           <h2 style={{ ...typography.h3, color: colors.text, margin: 0 }}>Regalos disponibles</h2>
           <span style={{ fontSize: 12, fontWeight: 600, color: colors.textTertiary, backgroundColor: colors.card, borderRadius: borderRadius.full, padding: `2px ${spacing.sm}px`, border: `1px solid ${colors.borderLight}` }}>
             {marcas.reduce((acc, m) => acc + m.montos.length, 0)} giftcards
