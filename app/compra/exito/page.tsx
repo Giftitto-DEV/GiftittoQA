@@ -70,11 +70,36 @@ function ExitoContent() {
   };
 
   const handleCompartir = async () => {
-    const truncated = codigo.slice(0, 4);
-    const shareUrl = `${window.location.origin}/compra/exito?marca=${encodeURIComponent(marca)}&monto=${monto}&cod=${encodeURIComponent(truncated)}&fecha=${encodeURIComponent(fecha)}`;
-    await navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const ref = couponRef.current;
+    if (!ref) return;
+    setSharing("generic");
+    const text = `Te regalo ${marca} ${formatMonto(monto)} con el código ${codigo}`;
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const canvas = await html2canvas(ref, { backgroundColor: null, scale: 2, useCORS: true, logging: false });
+      const blob: Blob | null = await new Promise((res) => canvas.toBlob((b) => res(b), "image/png"));
+      if (!blob) throw new Error("canvas empty");
+      const file = new File([blob], `giftitto-${marca}-${codigo}.png`, { type: "image/png" });
+      if ((navigator as any).canShare?.({ files: [file] })) {
+        await (navigator as any).share({ files: [file], title: `Te regalo ${marca}`, text });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.name;
+        a.click();
+        URL.revokeObjectURL(url);
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } finally {
+      setTimeout(() => setSharing(null), 800);
+    }
   };
 
   const captureAndShare = async (channel: "whatsapp" | "email") => {
@@ -189,6 +214,7 @@ function ExitoContent() {
             </button>
             <button
               onClick={handleCompartir}
+              disabled={sharing === "generic"}
               className="hover-lift"
               style={{
                 flex: 1,
@@ -196,16 +222,17 @@ function ExitoContent() {
                 alignItems: "center",
                 justifyContent: "center",
                 gap: spacing.sm,
-                backgroundColor: "transparent",
+                backgroundColor: sharing === "generic" ? colors.backgroundSecondary : "transparent",
                 color: colors.text,
                 border: `1.5px solid ${colors.border}`,
                 borderRadius: borderRadius.lg,
                 padding: `${spacing.md}px`,
-                cursor: "pointer",
+                cursor: sharing ? "wait" : "pointer",
                 fontWeight: 600,
+                opacity: sharing === "generic" ? 0.6 : 1,
               }}
             >
-              <Gift size={16} /> Compartir
+              {sharing === "generic" ? <Loader2 size={16} style={{ animation: "spin 0.8s linear infinite" }} color={colors.textTertiary} /> : <Gift size={16} />} {sharing === "generic" ? "Generando..." : copied ? "Copiado" : "Compartir"}
             </button>
           </div>
 
