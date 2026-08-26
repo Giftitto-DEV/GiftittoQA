@@ -12,11 +12,11 @@ type Marca = {
   montos: number[];
 };
 
-const brandGradients: Record<string, string[]> = {
-  cinemax: ["#1F2937", "#4B5563"],
-  gustoexpress: ["#d9153d", "#F5AEBD"],
-  modaviva: ["#EC4899", "#F9A8D4"],
-  tecnoplus: ["#3B82F6", "#93C5FD"],
+const brandImages: Record<string, string> = {
+  cinemax: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=600&q=80&auto=format&fit=crop",
+  gustoexpress: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80&auto=format&fit=crop",
+  modaviva: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80&auto=format&fit=crop",
+  tecnoplus: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&q=80&auto=format&fit=crop",
 };
 
 const brandLogos: Record<string, string> = {
@@ -73,12 +73,10 @@ export default function Home() {
     );
   }
 
-  const hPad = layout.contentPaddingMobile;
-
   return (
     <div style={{ minHeight: "100vh", backgroundColor: colors.backgroundSecondary }}>
-      <div style={{ maxWidth: layout.maxWidth, margin: "0 auto", padding: `${spacing.xl}px ${hPad}px ${spacing.xxxxl}px` }}>
-        <div style={{ display: "flex", alignItems: "center", gap: spacing.sm, marginBottom: spacing.lg }}>
+      <div style={{ maxWidth: layout.maxWidth, margin: "0 auto", padding: `${spacing.xl}px ${layout.contentPaddingMobile}px ${spacing.xxxxl}px` }}>
+        <div className="fade-up" style={{ display: "flex", alignItems: "center", gap: spacing.sm, marginBottom: spacing.lg, animationDelay: "0.05s" }}>
           <h2 style={{ ...typography.h3, color: colors.text, margin: 0 }}>Regalos disponibles</h2>
           <span style={{ fontSize: 12, fontWeight: 600, color: colors.textTertiary, backgroundColor: colors.card, borderRadius: borderRadius.full, padding: `2px ${spacing.sm}px`, border: `1px solid ${colors.borderLight}` }}>
             {marcas.reduce((acc, m) => acc + m.montos.length, 0)} giftcards
@@ -92,14 +90,16 @@ export default function Home() {
             gap: 16,
           }}
         >
-          {marcas.flatMap((marca) =>
-            marca.montos.map((monto) => {
+          {marcas.flatMap((marca, marcaIdx) =>
+            marca.montos.map((monto, montoIdx) => {
               const cardId = `${marca.id}-${monto}`;
               const isHovered = hoveredId === cardId;
-              const gradient = brandGradients[marca.id] ?? ["#d9153d", "#E54361"];
+              const globalIdx = marcaIdx * 3 + montoIdx;
+              const imgUrl = brandImages[marca.id];
               return (
                 <div
                   key={cardId}
+                  className="fade-up"
                   onMouseEnter={() => setHoveredId(cardId)}
                   onMouseLeave={() => setHoveredId(null)}
                   style={{
@@ -112,14 +112,37 @@ export default function Home() {
                     transition: "transform 0.25s ease, box-shadow 0.25s ease",
                     display: "flex",
                     flexDirection: "column",
+                    animationDelay: `${0.1 + globalIdx * 0.06}s`,
                   }}
                 >
-                  <div style={{ position: "relative", width: "100%", height: 140, overflow: "hidden", background: `linear-gradient(135deg, ${gradient[0]}, ${gradient[1]})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Gift size={36} color="rgba(255,255,255,0.9)" />
-                    <div style={{ position: "absolute", bottom: spacing.sm, left: spacing.md, width: 32, height: 32, borderRadius: "50%", border: `2px solid ${colors.card}`, backgroundColor: colors.card, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: shadows.xs }}>
+                  <div style={{ position: "relative", width: "100%", height: 170, overflow: "hidden", backgroundColor: colors.borderLight }}>
+                    {imgUrl ? (
+                      <img
+                        src={imgUrl}
+                        alt={marca.nombre}
+                        loading="lazy"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          transition: "transform 0.3s ease",
+                          transform: isHovered ? "scale(1.05)" : "scale(1)",
+                        }}
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <div style={{ width: "100%", height: "100%", background: `linear-gradient(135deg, ${colors.primary}, ${colors.primaryLight})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Gift size={36} color="rgba(255,255,255,0.9)" />
+                      </div>
+                    )}
+                    <div style={{ position: "absolute", bottom: spacing.sm, left: spacing.md, width: 34, height: 34, borderRadius: "50%", border: `2px solid ${colors.card}`, backgroundColor: colors.card, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: shadows.xs }}>
                       <span style={{ fontSize: 13, fontWeight: 700, color: colors.primary }}>{brandLogos[marca.id] ?? marca.nombre.charAt(0)}</span>
                     </div>
-                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 40, background: "linear-gradient(to top, rgba(0,0,0,0.05), transparent)", pointerEvents: "none" }} />
+                    <div style={{ position: "absolute", top: spacing.sm, right: spacing.sm, backgroundColor: colors.primary, color: "#fff", fontSize: 11, fontWeight: 700, borderRadius: borderRadius.full, padding: `3px ${spacing.sm}px` }}>
+                      Nuevo
+                    </div>
                   </div>
 
                   <div style={{ padding: spacing.lg, flex: 1, display: "flex", flexDirection: "column" }}>
@@ -141,15 +164,18 @@ export default function Home() {
                       <button
                         onClick={() => handleComprar(marca.id, monto)}
                         style={{
-                          backgroundColor: colors.primary,
+                          backgroundColor: isHovered ? colors.primaryDark : colors.primary,
                           color: "#fff",
                           border: "none",
                           borderRadius: borderRadius.lg,
                           padding: `${spacing.sm}px ${spacing.md}px`,
                           fontSize: 13,
-                          fontWeight: 600,
+                          fontWeight: 700,
                           cursor: "pointer",
                           fontFamily: "inherit",
+                          transition: "background-color 0.2s ease, transform 0.15s ease",
+                          transform: isHovered ? "scale(1.03)" : "scale(1)",
+                          boxShadow: isHovered ? shadows.colored : "none",
                         }}
                       >
                         Comprar
@@ -162,8 +188,6 @@ export default function Home() {
           )}
         </div>
       </div>
-
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }

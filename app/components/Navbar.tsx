@@ -2,9 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { colors } from "@/lib/colors";
+import { spacing, borderRadius, shadows, transitions } from "@/lib/theme";
+import { BrandLogo } from "./BrandLogo";
 
 export default function Navbar() {
   const [user, setUser] = useState<{ nombre: string; email: string } | null>(null);
+  const [hovered, setHovered] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/usuario/me")
@@ -21,27 +25,95 @@ export default function Navbar() {
   };
 
   return (
-    <header className="w-full border-b bg-white">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-        <Link href="/" className="text-xl font-bold tracking-tight">
-          Giftitto
+    <header
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+        width: "100%",
+        height: 64,
+        backgroundColor: colors.primary,
+        boxShadow: shadows.md,
+        borderBottom: `1px solid ${colors.primaryDark}`,
+      }}
+    >
+      <div style={{ maxWidth: 1280, margin: "0 auto", height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: `0 ${spacing.lg}px` }}>
+        <Link href="/" style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
+          <BrandLogo variant="light" size={28} />
         </Link>
-        <nav className="flex items-center gap-4 text-sm">
-          <Link href="/" className="hover:underline">
+        <nav style={{ display: "flex", alignItems: "center", gap: spacing.md, fontSize: 14 }}>
+          <Link
+            href="/"
+            onMouseEnter={() => setHovered("home")}
+            onMouseLeave={() => setHovered(null)}
+            style={{
+              color: "#fff",
+              fontWeight: 500,
+              textDecoration: "none",
+              padding: `${spacing.xs}px ${spacing.sm}px`,
+              borderRadius: borderRadius.md,
+              backgroundColor: hovered === "home" ? "rgba(255,255,255,0.15)" : "transparent",
+              transition: transitions.fast,
+            }}
+          >
             Home
           </Link>
           {user ? (
             <>
-              <Link href="/cuenta" className="hover:underline">
+              <Link
+                href="/cuenta"
+                onMouseEnter={() => setHovered("cuenta")}
+                onMouseLeave={() => setHovered(null)}
+                style={{
+                  color: "#fff",
+                  fontWeight: 500,
+                  textDecoration: "none",
+                  padding: `${spacing.xs}px ${spacing.sm}px`,
+                  borderRadius: borderRadius.md,
+                  backgroundColor: hovered === "cuenta" ? "rgba(255,255,255,0.15)" : "transparent",
+                  transition: transitions.fast,
+                }}
+              >
                 Mi cuenta
               </Link>
-              <span className="text-zinc-600">{user.nombre}</span>
-              <button onClick={handleLogout} className="rounded bg-zinc-900 px-3 py-1.5 text-white hover:bg-zinc-700">
+              <span style={{ color: "rgba(255,255,255,0.9)", fontSize: 13, fontWeight: 500 }}>{user.nombre}</span>
+              <button
+                onClick={handleLogout}
+                onMouseEnter={() => setHovered("logout")}
+                onMouseLeave={() => setHovered(null)}
+                style={{
+                  backgroundColor: hovered === "logout" ? "#fff" : "rgba(255,255,255,0.95)",
+                  color: colors.primary,
+                  border: "none",
+                  borderRadius: borderRadius.full,
+                  padding: `${spacing.xs + 2}px ${spacing.lg}px`,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  transition: transitions.fast,
+                  boxShadow: shadows.sm,
+                }}
+              >
                 Cerrar sesión
               </button>
             </>
           ) : (
-            <Link href="/login" className="rounded bg-zinc-900 px-3 py-1.5 text-white hover:bg-zinc-700">
+            <Link
+              href="/login"
+              onMouseEnter={() => setHovered("login")}
+              onMouseLeave={() => setHovered(null)}
+              style={{
+                backgroundColor: hovered === "login" ? "#fff" : "rgba(255,255,255,0.95)",
+                color: colors.primary,
+                borderRadius: borderRadius.full,
+                padding: `${spacing.xs + 2}px ${spacing.lg}px`,
+                fontSize: 13,
+                fontWeight: 700,
+                textDecoration: "none",
+                transition: transitions.fast,
+                boxShadow: shadows.sm,
+              }}
+            >
               Ingresar
             </Link>
           )}
