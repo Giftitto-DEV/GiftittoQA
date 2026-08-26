@@ -2,6 +2,8 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { colors } from "@/lib/colors";
+import { spacing, borderRadius, shadows } from "@/lib/theme";
 
 function LoginForm() {
   const router = useRouter();
@@ -11,6 +13,8 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [focused, setFocused] = useState<string | null>(null);
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     fetch("/api/usuario/me").then((r) => {
@@ -39,43 +43,104 @@ function LoginForm() {
   };
 
   return (
-    <div className="mx-auto max-w-md px-4 py-10">
-      <h1 className="mb-6 text-2xl font-bold">Ingresar</h1>
-      <form onSubmit={handleSubmit} className="rounded-lg border bg-white p-6 shadow-sm" noValidate>
-        <div className="mb-4">
-          <label className="mb-1 block text-sm font-medium">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={`w-full rounded border px-3 py-2 text-sm ${emailError ? "border-red-500" : ""}`}
-            placeholder="demo@giftitto.com"
-          />
-          {emailError && <p className="mt-1 text-xs text-red-600">Completá este campo</p>}
-        </div>
-        <div className="mb-6">
-          <label className="mb-1 block text-sm font-medium">Contraseña</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={`w-full rounded border px-3 py-2 text-sm ${passwordError ? "border-red-500" : ""}`}
-            placeholder="••••••"
-          />
-          {passwordError && <p className="mt-1 text-xs text-red-600">Completá este campo</p>}
-        </div>
-        <button type="submit" className="w-full rounded bg-zinc-900 py-2 text-sm font-medium text-white hover:bg-zinc-700">
-          Ingresar
-        </button>
-        <p className="mt-4 text-xs text-zinc-500">Usuarios demo: demo@giftitto.com / demo123 — ana@giftitto.com / ana123</p>
-      </form>
+    <div style={{ minHeight: "70vh", display: "flex", alignItems: "center", justifyContent: "center", padding: `${spacing.xl}px`, backgroundColor: colors.backgroundSecondary }}>
+      <div style={{ width: "100%", maxWidth: 440 }}>
+        <h1 className="fade-up" style={{ fontSize: 28, fontWeight: 700, color: colors.text, margin: `0 0 ${spacing.lg}px`, textAlign: "center", animationDelay: "0.05s" }}>
+          Bienvenido de vuelta
+        </h1>
+        <p className="fade-up" style={{ fontSize: 14, color: colors.textSecondary, textAlign: "center", margin: `0 0 ${spacing.xl}px`, animationDelay: "0.12s" }}>
+          Ingresá para seguir comprando giftcards
+        </p>
+        <form
+          onSubmit={handleSubmit}
+          className="fade-up scale-in"
+          style={{
+            backgroundColor: colors.card,
+            borderRadius: borderRadius.xl,
+            border: `1px solid ${colors.borderLight}`,
+            boxShadow: shadows.lg,
+            padding: spacing.xl,
+            animationDelay: "0.18s",
+          }}
+          noValidate
+        >
+          <div style={{ marginBottom: spacing.lg }}>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: colors.text, marginBottom: spacing.xs }}>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onFocus={() => setFocused("email")}
+              onBlur={() => setFocused(null)}
+              placeholder="demo@giftitto.com"
+              style={{
+                width: "100%",
+                borderRadius: borderRadius.lg,
+                border: `1.5px solid ${emailError ? colors.error : focused === "email" ? colors.primary : colors.border}`,
+                padding: `${spacing.sm + 2}px ${spacing.md}px`,
+                fontSize: 14,
+                outline: "none",
+                transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+                boxShadow: focused === "email" ? `0 0 0 3px ${colors.primary}18` : "none",
+              }}
+            />
+            {emailError && <p style={{ margin: `6px 0 0`, fontSize: 12, color: colors.error, animation: "fadeUp 0.3s ease" }}>Completá este campo</p>}
+          </div>
+          <div style={{ marginBottom: spacing.xl }}>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: colors.text, marginBottom: spacing.xs }}>Contraseña</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onFocus={() => setFocused("pass")}
+              onBlur={() => setFocused(null)}
+              placeholder="••••••"
+              style={{
+                width: "100%",
+                borderRadius: borderRadius.lg,
+                border: `1.5px solid ${passwordError ? colors.error : focused === "pass" ? colors.primary : colors.border}`,
+                padding: `${spacing.sm + 2}px ${spacing.md}px`,
+                fontSize: 14,
+                outline: "none",
+                transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+                boxShadow: focused === "pass" ? `0 0 0 3px ${colors.primary}18` : "none",
+              }}
+            />
+            {passwordError && <p style={{ margin: `6px 0 0`, fontSize: 12, color: colors.error, animation: "fadeUp 0.3s ease" }}>Completá este campo</p>}
+          </div>
+          <button
+            type="submit"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            style={{
+              width: "100%",
+              backgroundColor: hovered ? colors.primaryDark : colors.primary,
+              color: "#fff",
+              border: "none",
+              borderRadius: borderRadius.lg,
+              padding: `${spacing.md}px`,
+              fontSize: 15,
+              fontWeight: 700,
+              cursor: "pointer",
+              transition: "background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease",
+              transform: hovered ? "translateY(-1px)" : "translateY(0)",
+              boxShadow: hovered ? shadows.colored : shadows.sm,
+            }}
+          >
+            Ingresar
+          </button>
+          <p style={{ marginTop: spacing.lg, fontSize: 12, color: colors.textTertiary, textAlign: "center", lineHeight: 1.5 }}>
+            Usuarios demo: <span style={{ fontWeight: 600, color: colors.textSecondary }}>demo@giftitto.com / demo123</span> — <span style={{ fontWeight: 600, color: colors.textSecondary }}>ana@giftitto.com / ana123</span>
+          </p>
+        </form>
+      </div>
     </div>
   );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center">Cargando...</div>}>
+    <Suspense fallback={<div style={{ padding: 40, textAlign: "center", animation: "pulse 1s ease infinite" }}>Cargando...</div>}>
       <LoginForm />
     </Suspense>
   );

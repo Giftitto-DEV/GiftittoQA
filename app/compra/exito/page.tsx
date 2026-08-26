@@ -11,9 +11,14 @@ const successAnimationCss = `
 @keyframes scaleIn{0%{transform:scale(0.3);opacity:0}60%{transform:scale(1.1);opacity:1}80%{transform:scale(0.95)}100%{transform:scale(1)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+@keyframes pulseBtn{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
 .success-icon{animation:scaleIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275) forwards}
 .fade-up-1{opacity:0;animation:fadeUp 0.5s ease 0.4s forwards}
+.fade-up-2{opacity:0;animation:fadeUp 0.5s ease 0.6s forwards}
 .fade-up-3{opacity:0;animation:fadeUp 0.5s ease 0.8s forwards}
+.fade-up-4{opacity:0;animation:fadeUp 0.5s ease 1s forwards}
+.hover-lift{transition:transform 0.2s ease, box-shadow 0.2s ease}
+.hover-lift:hover{transform:translateY(-2px);box-shadow:0 8px 16px rgba(0,0,0,0.1)}
 `;
 
 function ConfettiPiece({ index }: { index: number }) {
@@ -118,12 +123,15 @@ function ExitoContent() {
           </div>
         </div>
 
-        <div className="fade-up-3" style={{ width: "100%" }}>
-          <CouponCard ref={couponRef} code={codigo || "GC-XXXX"} businessName={marca || "Giftitto"} title={`${marca || "Giftcard"} ${monto ? formatMonto(monto) : ""}`} expiresAt={expiresAt} />
+        <div className="fade-up-2" style={{ width: "100%" }}>
+          <div className="hover-lift">
+            <CouponCard ref={couponRef} code={codigo || "GC-XXXX"} businessName={marca || "Giftitto"} title={`${marca || "Giftcard"} ${monto ? formatMonto(monto) : ""}`} expiresAt={expiresAt} />
+          </div>
 
-          <div style={{ display: "flex", gap: spacing.sm, marginTop: spacing.lg }}>
+          <div className="fade-up-3" style={{ display: "flex", gap: spacing.sm, marginTop: spacing.lg }}>
             <button
               onClick={handleCopy}
+              className="hover-lift"
               style={{
                 flex: 1,
                 display: "flex",
@@ -144,6 +152,7 @@ function ExitoContent() {
             </button>
             <button
               onClick={handleCompartir}
+              className="hover-lift"
               style={{
                 flex: 1,
                 display: "flex",
@@ -163,9 +172,10 @@ function ExitoContent() {
             </button>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: spacing.sm, marginTop: spacing.sm }}>
+          <div className="fade-up-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: spacing.sm, marginTop: spacing.sm }}>
             <button
               onClick={sendByWhatsApp}
+              className="hover-lift"
               style={{
                 display: "flex",
                 flexDirection: "column",
@@ -183,6 +193,7 @@ function ExitoContent() {
             </button>
             <button
               onClick={sendByEmail}
+              className="hover-lift"
               style={{
                 display: "flex",
                 flexDirection: "column",
@@ -202,6 +213,7 @@ function ExitoContent() {
 
           <button
             onClick={() => (window.location.href = "/")}
+            className="fade-up-4 hover-lift"
             style={{
               width: "100%",
               marginTop: spacing.lg,
@@ -220,7 +232,7 @@ function ExitoContent() {
           >
             <ShoppingBag size={20} /> Seguir comprando
           </button>
-          <p style={{ textAlign: "center", fontSize: 12, color: colors.textTertiary, marginTop: spacing.md }}>Refrescá la página: el cupón se mantiene por URL.</p>
+          <p className="fade-up-4" style={{ textAlign: "center", fontSize: 12, color: colors.textTertiary, marginTop: spacing.md }}>Refrescá la página: el cupón se mantiene por URL.</p>
         </div>
       </div>
     </div>

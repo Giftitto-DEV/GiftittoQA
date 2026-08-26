@@ -9,6 +9,8 @@ export default function CuentaPage() {
   const [user, setUser] = useState<{ nombre: string; email: string } | null>(null);
   const [giftcards, setGiftcards] = useState<{ marca: string; monto: number; codigo: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
+  const [hoveredLogout, setHoveredLogout] = useState(false);
 
   useEffect(() => {
     Promise.all([fetch("/api/usuario/me"), fetch("/api/usuario/giftcards")]).then(async ([meRes, gcRes]) => {
@@ -54,6 +56,7 @@ export default function CuentaPage() {
     <div style={{ minHeight: "100%", backgroundColor: colors.backgroundSecondary }}>
       <div style={{ maxWidth: 720, margin: "0 auto", padding: `${spacing.xl}px ${spacing.lg}px` }}>
         <div
+          className="fade-up"
           style={{
             backgroundColor: colors.card,
             borderRadius: borderRadius.xl,
@@ -64,9 +67,11 @@ export default function CuentaPage() {
             alignItems: "center",
             gap: spacing.lg,
             marginBottom: spacing.lg,
+            animationDelay: "0.05s",
           }}
         >
           <div
+            className="scale-in"
             style={{
               width: 64,
               height: 64,
@@ -76,6 +81,8 @@ export default function CuentaPage() {
               alignItems: "center",
               justifyContent: "center",
               flexShrink: 0,
+              boxShadow: `0 0 0 8px ${colors.primary}14`,
+              animationDelay: "0.2s",
             }}
           >
             <span style={{ color: "#fff", fontSize: 24, fontWeight: 700 }}>{initial}</span>
@@ -87,6 +94,7 @@ export default function CuentaPage() {
         </div>
 
         <div
+          className="fade-up"
           style={{
             backgroundColor: colors.card,
             borderRadius: borderRadius.xl,
@@ -94,12 +102,13 @@ export default function CuentaPage() {
             boxShadow: shadows.sm,
             overflow: "hidden",
             marginBottom: spacing.lg,
+            animationDelay: "0.15s",
           }}
         >
           <div style={{ padding: `${spacing.md}px ${spacing.lg}px`, borderBottom: `1px solid ${colors.borderLight}` }}>
             <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: colors.textSecondary, textTransform: "uppercase", letterSpacing: "0.4px" }}>Información</p>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: spacing.md, padding: `${spacing.md}px ${spacing.lg}px`, borderBottom: `1px solid ${colors.borderLight}` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: spacing.md, padding: `${spacing.md}px ${spacing.lg}px`, borderBottom: `1px solid ${colors.borderLight}`, transition: "background-color 0.2s ease" }}>
             <div style={{ width: 34, height: 34, borderRadius: "50%", backgroundColor: colors.backgroundSecondary, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <User size={16} color={colors.textSecondary} />
             </div>
@@ -120,6 +129,7 @@ export default function CuentaPage() {
         </div>
 
         <div
+          className="fade-up"
           style={{
             backgroundColor: colors.card,
             borderRadius: borderRadius.xl,
@@ -127,14 +137,31 @@ export default function CuentaPage() {
             boxShadow: shadows.sm,
             overflow: "hidden",
             marginBottom: spacing.lg,
+            animationDelay: "0.25s",
           }}
         >
           <div style={{ padding: `${spacing.md}px ${spacing.lg}px`, borderBottom: `1px solid ${colors.borderLight}`, display: "flex", alignItems: "center", gap: 8 }}>
             <Gift size={16} color={colors.primary} />
             <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: colors.textSecondary, textTransform: "uppercase", letterSpacing: "0.4px" }}>Mis giftcards</p>
           </div>
-          {giftcards.map((gc) => (
-            <div key={gc.codigo} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: `${spacing.md}px ${spacing.lg}px`, borderBottom: `1px solid ${colors.borderLight}` }}>
+          {giftcards.map((gc, idx) => (
+            <div
+              key={gc.codigo}
+              className="fade-up"
+              onMouseEnter={() => setHoveredRow(gc.codigo)}
+              onMouseLeave={() => setHoveredRow(null)}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: `${spacing.md}px ${spacing.lg}px`,
+                borderBottom: idx < giftcards.length - 1 ? `1px solid ${colors.borderLight}` : undefined,
+                backgroundColor: hoveredRow === gc.codigo ? colors.backgroundSecondary : "transparent",
+                transition: "background-color 0.2s ease, transform 0.2s ease",
+                transform: hoveredRow === gc.codigo ? "translateX(4px)" : "translateX(0)",
+                animationDelay: `${0.3 + idx * 0.08}s`,
+              }}
+            >
               <span style={{ fontSize: 14, fontWeight: 500 }}>
                 {gc.marca} — ${gc.monto.toLocaleString("es-AR")}
               </span>
@@ -145,6 +172,9 @@ export default function CuentaPage() {
 
         <button
           onClick={handleLogout}
+          onMouseEnter={() => setHoveredLogout(true)}
+          onMouseLeave={() => setHoveredLogout(false)}
+          className="fade-up"
           style={{
             display: "flex",
             alignItems: "center",
@@ -152,13 +182,17 @@ export default function CuentaPage() {
             gap: spacing.sm,
             width: "100%",
             padding: spacing.md,
-            backgroundColor: colors.card,
+            backgroundColor: hoveredLogout ? colors.error50 : colors.card,
             border: `1px solid ${colors.errorLight}`,
             borderRadius: borderRadius.xl,
             cursor: "pointer",
             fontSize: 15,
             fontWeight: 600,
             color: colors.error,
+            boxShadow: hoveredLogout ? shadows.md : shadows.sm,
+            transform: hoveredLogout ? "translateY(-1px)" : "translateY(0)",
+            transition: "all 0.2s ease",
+            animationDelay: "0.45s",
           }}
         >
           <LogOut size={18} color={colors.error} /> Cerrar sesión
