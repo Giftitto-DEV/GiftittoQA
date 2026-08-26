@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Gift, Star } from "lucide-react";
+import { colors } from "@/lib/colors";
+import { spacing, borderRadius, shadows, typography, layout } from "@/lib/theme";
 
 type Marca = {
   id: string;
@@ -9,9 +12,24 @@ type Marca = {
   montos: number[];
 };
 
+const brandGradients: Record<string, string[]> = {
+  cinemax: ["#1F2937", "#4B5563"],
+  gustoexpress: ["#d9153d", "#F5AEBD"],
+  modaviva: ["#EC4899", "#F9A8D4"],
+  tecnoplus: ["#3B82F6", "#93C5FD"],
+};
+
+const brandLogos: Record<string, string> = {
+  cinemax: "C",
+  gustoexpress: "G",
+  modaviva: "M",
+  tecnoplus: "T",
+};
+
 export default function Home() {
   const [marcas, setMarcas] = useState<Marca[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -48,34 +66,104 @@ export default function Home() {
   };
 
   if (loading) {
-    return <div className="mx-auto max-w-5xl p-8 text-center">Cargando catálogo...</div>;
+    return (
+      <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: colors.backgroundSecondary }}>
+        <div style={{ width: 36, height: 36, borderRadius: "50%", border: `3px solid ${colors.borderLight}`, borderTopColor: colors.primary, animation: "spin 0.8s linear infinite" }} />
+      </div>
+    );
   }
 
-  return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="mb-2 text-2xl font-bold">Catálogo de Giftcards</h1>
-      <p className="mb-6 text-sm text-zinc-600">Elegí una marca y un monto para comprar tu giftcard.</p>
+  const hPad = layout.contentPaddingMobile;
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {marcas.map((marca) => (
-          <div key={marca.id} className="rounded-lg border bg-white p-5 shadow-sm">
-            <h2 className="mb-3 text-lg font-semibold">{marca.nombre}</h2>
-            <div className="flex flex-col gap-2">
-              {marca.montos.map((monto) => (
-                <div key={monto} className="flex items-center justify-between rounded border px-3 py-2">
-                  <span className="font-medium">${monto}</span>
-                  <button
-                    onClick={() => handleComprar(marca.id, monto)}
-                    className="rounded bg-zinc-900 px-4 py-1.5 text-sm text-white hover:bg-zinc-700"
-                  >
-                    Comprar
-                  </button>
+  return (
+    <div style={{ minHeight: "100vh", backgroundColor: colors.backgroundSecondary }}>
+      <div style={{ maxWidth: layout.maxWidth, margin: "0 auto", padding: `${spacing.xl}px ${hPad}px ${spacing.xxxxl}px` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: spacing.sm, marginBottom: spacing.lg }}>
+          <h2 style={{ ...typography.h3, color: colors.text, margin: 0 }}>Regalos disponibles</h2>
+          <span style={{ fontSize: 12, fontWeight: 600, color: colors.textTertiary, backgroundColor: colors.card, borderRadius: borderRadius.full, padding: `2px ${spacing.sm}px`, border: `1px solid ${colors.borderLight}` }}>
+            {marcas.reduce((acc, m) => acc + m.montos.length, 0)} giftcards
+          </span>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+            gap: 16,
+          }}
+        >
+          {marcas.flatMap((marca) =>
+            marca.montos.map((monto) => {
+              const cardId = `${marca.id}-${monto}`;
+              const isHovered = hoveredId === cardId;
+              const gradient = brandGradients[marca.id] ?? ["#d9153d", "#E54361"];
+              return (
+                <div
+                  key={cardId}
+                  onMouseEnter={() => setHoveredId(cardId)}
+                  onMouseLeave={() => setHoveredId(null)}
+                  style={{
+                    backgroundColor: colors.card,
+                    borderRadius: borderRadius.xl,
+                    overflow: "hidden",
+                    cursor: "pointer",
+                    boxShadow: isHovered ? shadows.lg : shadows.sm,
+                    transform: isHovered ? "translateY(-4px)" : "translateY(0)",
+                    transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <div style={{ position: "relative", width: "100%", height: 140, overflow: "hidden", background: `linear-gradient(135deg, ${gradient[0]}, ${gradient[1]})`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Gift size={36} color="rgba(255,255,255,0.9)" />
+                    <div style={{ position: "absolute", bottom: spacing.sm, left: spacing.md, width: 32, height: 32, borderRadius: "50%", border: `2px solid ${colors.card}`, backgroundColor: colors.card, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: shadows.xs }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: colors.primary }}>{brandLogos[marca.id] ?? marca.nombre.charAt(0)}</span>
+                    </div>
+                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 40, background: "linear-gradient(to top, rgba(0,0,0,0.05), transparent)", pointerEvents: "none" }} />
+                  </div>
+
+                  <div style={{ padding: spacing.lg, flex: 1, display: "flex", flexDirection: "column" }}>
+                    <p style={{ fontSize: 12, fontWeight: 500, color: colors.textSecondary, textTransform: "uppercase", letterSpacing: "0.5px", margin: 0, marginBottom: spacing.xs, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {marca.nombre}
+                    </p>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: colors.text, margin: 0, marginBottom: spacing.sm, lineHeight: "20px", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                      {marca.nombre} · Giftcard
+                    </p>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: spacing.xs, marginBottom: spacing.sm }}>
+                      <Star size={14} color={colors.accent} fill={colors.accent} />
+                      <span style={{ fontSize: 13, fontWeight: 600, color: colors.text }}>4.8</span>
+                      <span style={{ fontSize: 13, color: colors.textTertiary }}>(124)</span>
+                    </div>
+
+                    <div style={{ marginTop: "auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: spacing.sm }}>
+                      <span style={{ fontSize: 18, fontWeight: 700, color: colors.text }}>${monto}</span>
+                      <button
+                        onClick={() => handleComprar(marca.id, monto)}
+                        style={{
+                          backgroundColor: colors.primary,
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: borderRadius.lg,
+                          padding: `${spacing.sm}px ${spacing.md}px`,
+                          fontSize: 13,
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          fontFamily: "inherit",
+                        }}
+                      >
+                        Comprar
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        ))}
+              );
+            })
+          )}
+        </div>
       </div>
+
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }
