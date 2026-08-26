@@ -53,7 +53,7 @@ function LoginForm() {
         </p>
         <form
           onSubmit={handleSubmit}
-          className="fade-up scale-in"
+          className="fade-up"
           style={{
             backgroundColor: colors.card,
             borderRadius: borderRadius.xl,
@@ -61,6 +61,7 @@ function LoginForm() {
             boxShadow: shadows.lg,
             padding: spacing.xl,
             animationDelay: "0.18s",
+            opacity: 1,
           }}
           noValidate
         >
