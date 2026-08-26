@@ -2,10 +2,10 @@
 
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState, useRef } from "react";
-import { CheckCircle, Copy, Check, Gift, Mail, MessageCircle, ShoppingBag } from "lucide-react";
+import { CheckCircle, Copy, Check, Gift, Mail, MessageCircle, ShoppingBag, Download, Loader2 } from "lucide-react";
 import { CouponCard } from "@/app/components/CouponCard";
 import { colors } from "@/lib/colors";
-import { spacing, borderRadius, typography } from "@/lib/theme";
+import { spacing, borderRadius, typography, shadows } from "@/lib/theme";
 
 const successAnimationCss = `
 @keyframes scaleIn{0%{transform:scale(0.3);opacity:0}60%{transform:scale(1.1);opacity:1}80%{transform:scale(0.95)}100%{transform:scale(1)}}
@@ -59,6 +59,7 @@ function ExitoContent() {
   const codigo = params.get("codigo") || "";
   const fecha = params.get("fecha") || "";
   const [copied, setCopied] = useState(false);
+  const [sharing, setSharing] = useState<string | null>(null);
   const [showConfetti] = useState(true);
   const couponRef = useRef<HTMLDivElement>(null);
 
@@ -76,16 +77,44 @@ function ExitoContent() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const sendByWhatsApp = () => {
-    const text = encodeURIComponent(`Te comparto mi giftcard ${marca} ${formatMonto(monto)} - Código: ${codigo}`);
-    window.open(`https://wa.me/?text=${text}`, "_blank");
+  const captureAndShare = async (channel: "whatsapp" | "email") => {
+    const ref = couponRef.current;
+    if (!ref) return;
+    setSharing(channel);
+    const text = `Te regalo ${marca} ${formatMonto(monto)} con el código ${codigo}`;
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const canvas = await html2canvas(ref, { backgroundColor: null, scale: 2, useCORS: true, logging: false });
+      const blob: Blob | null = await new Promise((res) => canvas.toBlob((b) => res(b), "image/png"));
+      if (!blob) throw new Error("canvas empty");
+      const file = new File([blob], `giftitto-${marca}-${codigo}.png`, { type: "image/png" });
+      const canShareFile = (navigator as any).canShare?.({ files: [file] });
+      if (canShareFile) {
+        await (navigator as any).share({ files: [file], title: `Te regalo ${marca}`, text });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.name;
+        a.click();
+        URL.revokeObjectURL(url);
+        if (channel === "whatsapp") {
+          window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+        } else {
+          window.location.href = `mailto:?subject=${encodeURIComponent(`Te regalo ${marca}`)}&body=${encodeURIComponent(text)}`;
+        }
+      }
+    } catch (e) {
+      const fallbackText = `Te regalo ${marca} ${formatMonto(monto)} con el código ${codigo}`;
+      if (channel === "whatsapp") window.open(`https://wa.me/?text=${encodeURIComponent(fallbackText)}`, "_blank");
+      else window.location.href = `mailto:?subject=${encodeURIComponent(`Te regalo ${marca}`)}&body=${encodeURIComponent(fallbackText)}`;
+    } finally {
+      setTimeout(() => setSharing(null), 1500);
+    }
   };
 
-  const sendByEmail = () => {
-    const subject = encodeURIComponent(`Te comparto mi giftcard ${marca}`);
-    const body = encodeURIComponent(`${marca} ${formatMonto(monto)}\nCódigo: ${codigo}`);
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
-  };
+  const sendByWhatsApp = () => captureAndShare("whatsapp");
+  const sendByEmail = () => captureAndShare("email");
 
   const expiresAt = fecha ? new Date(new Date(fecha).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString() : undefined;
   const productImageUrl = marca === "ModaViva" ? undefined : brandImagesByName[marca];
@@ -183,6 +212,7 @@ function ExitoContent() {
           <div className="fade-up-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: spacing.sm, marginTop: spacing.sm }}>
             <button
               onClick={sendByWhatsApp}
+              disabled={sharing === "whatsapp"}
               className="hover-lift"
               style={{
                 display: "flex",
@@ -193,14 +223,16 @@ function ExitoContent() {
                 border: `1px solid ${colors.border}`,
                 borderRadius: borderRadius.lg,
                 padding: `${spacing.md}px`,
-                cursor: "pointer",
+                cursor: sharing ? "wait" : "pointer",
+                opacity: sharing === "whatsapp" ? 0.6 : 1,
               }}
             >
-              <MessageCircle size={18} color="#25D366" />
-              <span style={{ fontSize: 12, fontWeight: 500 }}>WhatsApp</span>
+              {sharing === "whatsapp" ? <Loader2 size={18} color={colors.textTertiary} style={{ animation: "spin 0.8s linear infinite" }} /> : <MessageCircle size={18} color="#25D366" />}
+              <span style={{ fontSize: 12, fontWeight: 500 }}>{sharing === "whatsapp" ? "Generando..." : "WhatsApp"}</span>
             </button>
             <button
               onClick={sendByEmail}
+              disabled={sharing === "email"}
               className="hover-lift"
               style={{
                 display: "flex",
@@ -211,11 +243,12 @@ function ExitoContent() {
                 border: `1px solid ${colors.border}`,
                 borderRadius: borderRadius.lg,
                 padding: `${spacing.md}px`,
-                cursor: "pointer",
+                cursor: sharing ? "wait" : "pointer",
+                opacity: sharing === "email" ? 0.6 : 1,
               }}
             >
-              <Mail size={18} color={colors.primary} />
-              <span style={{ fontSize: 12, fontWeight: 500 }}>Email</span>
+              {sharing === "email" ? <Loader2 size={18} color={colors.textTertiary} style={{ animation: "spin 0.8s linear infinite" }} /> : <Mail size={18} color={colors.primary} />}
+              <span style={{ fontSize: 12, fontWeight: 500 }}>{sharing === "email" ? "Generando..." : "Email"}</span>
             </button>
           </div>
 
