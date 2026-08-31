@@ -130,9 +130,6 @@ function LoginForm() {
           >
             Ingresar
           </button>
-          <p style={{ marginTop: spacing.lg, fontSize: 12, color: colors.textTertiary, textAlign: "center", lineHeight: 1.5 }}>
-            Usuarios demo: <span style={{ fontWeight: 600, color: colors.textSecondary }}>demo@giftitto.com / demo123</span> — <span style={{ fontWeight: 600, color: colors.textSecondary }}>ana@giftitto.com / ana123</span>
-          </p>
         </form>
       </div>
     </div>
